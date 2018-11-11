@@ -1,0 +1,20 @@
+---
+language: minimal
+
+addons:
+  apt:
+    packages:
+      - docker-ce
+
+services:
+  - docker
+jobs:
+  include:
+    - stage: provision infra parallel group
+      script:
+        - "echo hello, provisioning infra"
+
+after_success:
+  - if [ -n "$TRAVIS_TAG" ]; then
+    echo "there was a git tag upon git push, so I will deploy"
+    fi
