@@ -1,0 +1,23 @@
+---
+AWSTemplateFormatVersion:  "2010-09-09"
+
+Parameters:
+  EnvironmentName:
+    Description: The name to associate resources with
+    Type: String
+
+Resources:
+  codeDeployGroup:
+    Type: AWS::IAM::Group
+    Properties:
+      GroupName: codeDeployGroup
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AWSCodeDeployFullAccess
+        - arn:aws:iam::aws:policy/AmazonS3FullAccess
+
+  CiUser:
+    Type: AWS::IAM::User
+    Properties:
+      Groups:
+        - codeDeployGroup
+      UserName: !Sub ${EnvironmentName}-travis-ci

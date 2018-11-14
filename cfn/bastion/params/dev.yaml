@@ -1,0 +1,3 @@
+BastionSSHKeyName: "sinatra"
+AllowedCidrRanges: "203.34.100.0/24"
+EnvironmentName: sinatra-dev
