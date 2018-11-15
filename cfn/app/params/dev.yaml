@@ -1,2 +1,3 @@
 ---
 EnvironmentName: sinatra-dev
+DockerVersion: 0.0.2

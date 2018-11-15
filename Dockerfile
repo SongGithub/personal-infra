@@ -9,6 +9,8 @@ RUN bundle install
 
 
 FROM ruby:2.5.3-alpine3.7
+RUN mkdir -p /app
+WORKDIR /app
 COPY --from=builder /usr/local/bundle/ /usr/local/bundle/
 COPY --from=builder /app/ /app/
 

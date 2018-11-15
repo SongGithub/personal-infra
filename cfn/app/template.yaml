@@ -1,6 +1,9 @@
 ---
 AWSTemplateFormatVersion: 2010-09-09
+
+
 Parameters:
+
   EnvironmentName:
     Description: The name to associate resources with
     Type: String
@@ -11,11 +14,16 @@ Parameters:
   AMIId:
     Description: AMI Id.
     Type: String
-    Default: "ami-09b42976632b27e9b"
+    Default: ami-08c26730c8ee004fa
   DesiredInstances:
     Description: Application Desired Instances
     Type: String
     Default: "2"
+  DockerVersion:
+    Description: docker image tag
+    Type: String
+    Default: "latest"
+
 
 Resources:
 
@@ -72,7 +80,7 @@ Resources:
       #   Protocol: HTTPS
       #   SSLCertificateId: !Ref WebServerCertARN
       HealthCheck:
-        Target: !Sub HTTP:80/health
+        Target: !Sub HTTP:80/
         HealthyThreshold: "2"
         UnhealthyThreshold: "2"
         Interval: "10"
@@ -252,28 +260,22 @@ Resources:
         Fn::Base64: !Sub |
           #!/bin/bash -xe
 
-          yum install -y git docker
-          service docker start
-
-          # Install code deploy
-          wget https://aws-codedeploy-ap-southeast-2.s3.amazonaws.com/latest/install
-          chmod +x ./install
-          ./install auto
-
           # Start cfn-init
-          yum install -y aws-cfn-bootstrap
+          yum install -y aws-cfn-bootstrap awscli
           /opt/aws/bin/cfn-init -v --region ${AWS::Region} --stack ${AWS::StackName} --resource EC2ServerLaunchConfiguration || error_exit 'Failed to run cfn-init'
 
-          # echo;
-          # echo '### Wait until instance is registered as healthy in the ELB'
-          # until [ "$state" == "InService" ]; do
-          #   state=$(aws --region ${AWS::Region} elb describe-instance-health \
-          #               --load-balancer-name ${ElasticLoadBalancer} \
-          #               --instances $(curl -s http://169.254.169.254/latest/meta-data/instance-id) \
-          #               --query InstanceStates[0].State \
-          #               --output text)
-          #   sleep 10
-          # done
+          docker run -d -p 8080:9292 -w /app songgithub/sinatra:${DockerVersion}
+
+          echo;
+          echo '### Wait until instance is registered as healthy in the ELB'
+          until [ "$state" == "InService" ]; do
+            state=$(aws --region ${AWS::Region} elb describe-instance-health \
+                        --load-balancer-name ${ElasticLoadBalancer} \
+                        --instances $(curl -s http://169.254.169.254/latest/meta-data/instance-id) \
+                        --query InstanceStates[0].State \
+                        --output text)
+            sleep 10
+          done
 
           # signal success
           /opt/aws/bin/cfn-signal -e $? --region ${AWS::Region} --stack ${AWS::StackName} --resource EC2ASG
