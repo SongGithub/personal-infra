@@ -1,13 +1,9 @@
 ---
-version: '2.0'
+version: "3.4"
 services:
-  base:
+
+  sinatra:
     build: .
-    volumes:
-      - "$HOME/.aws:/root/.aws"
-      - "$HOME/.kube:/root/.kube"
-      - ".:/app"
-      - "$HOME/.ssh:/root/.ssh"
     working_dir: /app
 
   stackup:
@@ -26,13 +22,3 @@ services:
       - ".:/app"
     working_dir: /app
     entrypoint: /gomplate
-
-  awscli:
-    image: myobplatform/aws-jq:0.1.0
-    working_dir: /app
-    volumes:
-      - "$HOME/.kube:/root/.kube"
-      - "$HOME/.aws:/root/.aws"
-      - ".:/app"
-    environment:
-      - AWS_DEFAULT_REGION=ap-southeast-2
