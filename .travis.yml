@@ -3,13 +3,23 @@ addons:
   apt:
     packages:
     - docker-ce
+
 services:
 - docker
-jobs:
-  include:
-  - stage: provision infra parallel group
-    script:
-    - echo hello, provisioning infra
+
+
+script:
+- docker build -t songgithub/sinatra .
+- docker run -d -p 80:9292 songgithub/sinatra
+- docker ps -a
+- ./bin/test_http
+# job1 build a new docker image with current build tag/number
+# job2 start the new docker image and assert running test_http return 0
+# job3 publish docker to an docker image repo account
+# job4 tag param file for app stack with the same build tag/number
+# job5 deploy it to AWS(to rolling-update EC2 instances)
+
+
 after_success:
 - if [ -n "$TRAVIS_TAG" ]; then echo "there was a git tag upon git push, so I will
   deploy" fi
@@ -19,3 +29,11 @@ env:
   - secure: SeY4ayzD74iZ/Tz/AsyB9B9EVnWyglpwZg+chQ2ABe+1NN3rk7skZPOVmU2Nj41FIc60wp8zu7kFPsEEyvA9K+LcRwUlCp8WeR0LqEFV6kAzgPDXlXZG3ucHazV/Pkbko+NHSiA4QEIsh3JoaUkdjxt2cXC8xIIyjcgiLE4APNiauYNR1uVkY2nQ2wY+VV+aN7zpadIpuyseh+Yr17YY93U2hnMAsfLo3DBboIIgxowcYVsEhuAJ8eTmpb8tRa5AAmSfYoN/unliDwV7Q1/EPB3ySszpuswgbl1K5ltQr8DEvCwNaAqQZoyEnxzThA6ZBftRSj2smXyxcy13wHTX/89Cggp8UsoC1KIE8Xl3KG5ynXp/lYJm7DNf2sTegJ9xbiJ+VbcJs9JxDLhEDAdNvptG+0M3tKt/e15BmnysKq/e2f5yV427d2g6MBMrdAn0BKKBqK0hO5C6p1CZ2aY86cpjZhOEw0XBEWP6ZO/K6JfZL2jVZVCFdcOl7hrVCykjOrjJG+rqiC2H1410+eb8c+wXGa0vgRkn4VPENaSwSqE2XjHbxgInfYE2rDGaNf9bDnugwrhaAVqs7Ibw00cQedCl7DbPUMvTo+eBhqwjmkie5/zG5uFTtKK6euYFk5bVrJm8vUAPATAWRDXA08Zh+X0cRcx/0YlMs1TEbqeza9Y=
   # AWS_SECRET_ACCESS_KEY
   - secure: WOnIACZG4oYFI8lGoge+LYmbGtA+mvioIAWHcEgjGZ7tsml715DhX+2yjxdTpLM5EKD6ITuUtsWybZKrIpp2pJx2d+L1mA/ziI/2taoK6bQXNhzv3sunqDUqokOwHafycMgISdStgDeqXzc+n14gV0Dwd2uw7BaB2HExyTVdkP4/qRMZO51i+7ufUgpqmdV4gFBqA7GCMUsPKj7q11ObZLiAsAt9LdyByA+GuvZNPS9A5OYNqN7qcKNMNqD72u/AU5Kdoqia4tOdeDMU64isiXSCt8pxjh5zJYxo3mlPl7ln881oD1s/o5SH14g4Q1H6zF33LpUVd0cbK+eVS5OLQHpimR3XIZggfSvx5nRcYpfylz4juPd2GxO3nAK2PDwiN413JIl3WLha9yjvTTIcXw+muPHjOpBs4wirZhJZ3VXokAXPl/lWj/ZksBekyZj4iJ8CIXVaNbAFbcnWC7rA34bpQwl0xYAtv/dbYcViGBQr3YkXNYARHznRKMOFCHzqPmh7KUJNGxhPBcfadrp2lO31Tb7QCJTvNytOJqTZ9k60lpG9NliMxX6hbIDzCEX4kPO3eL5BPCZPSMxarq33dJGiOnqxydo1idnlhkn8avLUg6D4OjxZtkCvFKSoSa+ugqYv2NNjn80EegbmhD2oV14pU/A7vi5MR9Dem7Eltcw=
+  # dockerhub user name
+  - secure: JVf/nxRJpTLoHMSp4zkUlW6GbOwStWMwZTrV82Xh+Kq7l4c5QVt2TFCIdjeCWC2peMyznVSJtqpJuLYdjeAJnMMgfhHv9uY5TsbnlPBrr0Se5BfDvV/PENgzpNDG67lWyRalRpt9lxnup3oHuT8aHoP1JeD6V71XygUwZgzPDg9HdnCXcSzetoSPwHrSu9WHsl4zButfrqxwm/QJgInbs9KMjvpH4iBUCT8FRK1Bp7en3ruRG7TMPzJbjp2d09V0Vk9TvX9vAXt9Q4MNS/Ip3Bh77x0lCxknZJGn+UguMv4xl97369QifHe+cN76dm0KCDqHGP+R2vxaO4UNkU3pc0cM2uMsH5nWdxxO0PcVqr5iVwFA33LKBiUpc8FkG+f3n5nL5aj3urErvOgYuEjwMq9UbCMO1Fv6qaPEyEYfAic4cBZkH2cZy+4gI42hyTLuFcxRVTJ1vexgnLG16AkOu4F6h4mstOyDPcFfeLetRBRS+WoseDW1HOIS8DtwyKoTKlgHfy+97xbTnBuOC71n4DUYXFCq9ugaT9sU2l2s1Xyh4duI+NUn7lJlm/mOQXCe730yWE4Tn2gAPjIseINqxii8/DV+MQU2CEMKlxWZ2hzucCTbGD7Cvrhn9gZgbvJvjO0gBNdNQ+xsPhMwTb35AtxIOsx0shP+qli/iRfEDog=
+  # dockerhub password
+  - secure: mPE2xKz4a2uuv9E0A62d7rMqxD+jo5c4WgWr5MbwZnknHcPE+jZ0oO3qCFcs31WVND/HSk27KyOlh4tesefzZlQvOfhhvftq8uAR1rQXOUU6mYeESTD9G7gQO594n6tAmM8LrTJSFufUOpqQS/EhvnX8XRUy9/Sok+E/hL92zqs3Dwic04fiZI3UfugRzfSO+iy0LUMWWrHEXnbw4dQBN4vtnpB8/F6ACg1ULD2nbb4X96+7GyruzPvZGtEMEV/n6eM+6g5nhRidveYc/xBL/qcEyxbsLJiTCOS0AaIk5wYwrB/5k7DfmWL1KUlfNzkb2P/hR19j6JJJhM/irzncMBANPWK2KwmIETQgl8PYsPk8HVhGxtN1fdurkFdbSufWC1RXBtylhTGLYDVAywMAUyKzwwPm8sBFjfl1d8yEwsFBAQQRs1dDKrr3yPbinJNSPrAQJQ5oeCgIooteDfY/Rocz+Hev2dLIL4Gq7WIfXxfy2iZIbxg/FNkWvaalxumJ2krANHlDEJkFXcb0Bg+wCZeLJEhpWBKwDDzoAEpSm/oCFZDvSs/tKifoVCTkE1PbwUDCfwdgAH6rP+5Oi1ul/zqeGudqIuIg3UI1lK2ctk8nwvj43O28Y8QqqyRvG80NDG5+0nuNi3qmZZChlbT8F3+hTAnpTTUXkiHf2PEPwJk=
+
+# agent permissions required:
+# - be able to trigger rolling-update in AWS/CFN
+# - be able to push docker images to a docker image repo

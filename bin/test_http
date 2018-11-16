@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+set -ex
+
+die() { printf '%s\n' "$*" >&2; exit 1; }
+resp=$(curl --write-out %{http_code} --silent --output /dev/null 127.0.0.1)
+
+
+[ "$resp" -eq 200 ] || die "there has been an error with web service!"
