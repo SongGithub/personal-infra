@@ -1,3 +1,4 @@
 ---
 EnvironmentName: sinatra-dev
-DockerVersion: 0.0.2
+DockerVersion: 0.0.4
+WebServerCertARN: arn:aws:acm:ap-southeast-2:451515956712:certificate/713f068b-0737-4a2a-b571-2f117ad2a0b5

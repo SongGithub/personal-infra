@@ -23,6 +23,10 @@ Parameters:
     Description: docker image tag
     Type: String
     Default: "latest"
+  WebServerCertARN:
+    Type: String
+    Description: the Amazon Resource Name (ARN) of an AWS Certificate Manager (ACM) certificate.
+    AllowedPattern: "arn:aws:acm:.*"
 
 
 Resources:
@@ -75,10 +79,10 @@ Resources:
         InstancePort: '80'
         Protocol: TCP
         InstanceProtocol: TCP
-      # - LoadBalancerPort: '443'
-      #   InstancePort: '80'
-      #   Protocol: HTTPS
-      #   SSLCertificateId: !Ref WebServerCertARN
+      - LoadBalancerPort: '443'
+        InstancePort: '80'
+        Protocol: HTTPS
+        SSLCertificateId: !Ref WebServerCertARN
       HealthCheck:
         Target: !Sub HTTP:80/
         HealthyThreshold: "2"
@@ -119,7 +123,7 @@ Resources:
     CreationPolicy:
       ResourceSignal:
         Count: !Ref DesiredInstances
-        Timeout: PT15M
+        Timeout: PT5M
   # Assumption: BastionAccessSecurityGroup already created and exported
   EC2SecurityGroup:
     Type: AWS::EC2::SecurityGroup
@@ -261,12 +265,19 @@ Resources:
           #!/bin/bash -xe
 
           # Start cfn-init
-          yum install -y aws-cfn-bootstrap awscli
+          yum install -y aws-cfn-bootstrap python unzip
+
+          # install aws cli
+          curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"
+          unzip awscli-bundle.zip
+          ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
+          export PATH=/usr/local/bin:$PATH
+          aws --version
+
           /opt/aws/bin/cfn-init -v --region ${AWS::Region} --stack ${AWS::StackName} --resource EC2ServerLaunchConfiguration || error_exit 'Failed to run cfn-init'
 
-          docker run -d -p 8080:9292 -w /app songgithub/sinatra:${DockerVersion}
+          docker run -d -p 80:9292 -w /app songgithub/sinatra:${DockerVersion}
 
-          echo;
           echo '### Wait until instance is registered as healthy in the ELB'
           until [ "$state" == "InService" ]; do
             state=$(aws --region ${AWS::Region} elb describe-instance-health \
