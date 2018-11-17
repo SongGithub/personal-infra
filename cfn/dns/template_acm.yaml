@@ -1,0 +1,13 @@
+---
+AWSTemplateFormatVersion:  "2010-09-09"
+
+Resources:
+  AcmChallengeCName:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: {{ (env.Getenv "hostedzone_id") }}
+      Name: {{ (env.Getenv "dns_validation_cname_key") }}
+      Type: CNAME
+      TTL: 60
+      ResourceRecords:
+      - {{ (env.Getenv "dns_validation_cname_value") }}

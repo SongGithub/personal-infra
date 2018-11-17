@@ -6,25 +6,36 @@ Parameters:
   AllowedCidrRanges:
     Description: AllowedCidr used to the bastion
     Type: String
-    Default: "203.34.100.0/24"
-
   BastionSSHKeyName:
     Description: SSHkey name for the bastion box.
     Type: String
-
   BastionInstanceType:
     Description: Instance type for bastion ec2 box.
     Type: String
     Default: t2.nano
-
-  # PublicSubnetIdList:
-  #   Description: PrivateSubnetIdList
-  #   Type: List<AWS::EC2::Subnet::Id>
-
   EnvironmentName:
     Description: EnvironmentName aka stack identifier
     Type: String
-
+  AllowedCidrRanges:
+    Description: AllowedCidr used to the bastion
+    Type: String
+  BastionSSHKeyName:
+    Description: SSHkey name for the bastion box.
+    Type: String
+  HostedZoneID:
+    Description: "hosted zone id for the new sub domain"
+    Type: String
+  DomainName:
+    Description: "domain name want to register"
+    Type: String
+  DockerVersion:
+    Description: docker image tag
+    Type: String
+    Default: "latest"
+  KeyName:
+    Description: Application ssh login keypair name
+    Type: AWS::EC2::KeyPair::KeyName
+    Default: "sinatra"
 
 # assume that VPC has been created and essential values exported
 Resources:

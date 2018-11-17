@@ -16,4 +16,4 @@ stackid=$env # cfn stack identifier
 
 $dcr stackup sinatra-"$stackid"-"$component_name" up \
     -t "$cfn_path"/"$component_name"/template.yaml \
-    -p "$cfn_path"/"$component_name"/params/"$env".yaml
+    -p "$cfn_path"/params/"$env".yaml

@@ -10,9 +10,7 @@ services:
 
 script:
 - docker build -t songgithub/sinatra .
-- docker run -d -p 80:9292 songgithub/sinatra
-- docker ps -a
-- ./bin/test_http
+
 # job1 build a new docker image with current build tag/number
 # job2 start the new docker image and assert running test_http return 0
 # job3 publish docker to an docker image repo account

@@ -1,6 +1,8 @@
 # take-me-to-the-cloud
 Take me to the cloud before you could take me to the moon
+
 [![Build Status](https://travis-ci.org/SongGithub/take-me-to-the-cloud.svg?branch=master)](https://travis-ci.org/SongGithub/take-me-to-the-cloud)
+
 ## System design goals
 
 - HA: EC2 instances are spreaded into all 3 AZ zone in Sydnet region, managed by ASG
@@ -53,3 +55,17 @@ for instance `~/Downloads`
 - find public IP of the bastion instance
 - `ssh -A ec2-user@<the-bastion-ip>`
 *Note: Similarly, creation of the Bastion should not be inside CICD pipeline*
+
+## DNS setup
+
+`dev.sinatra.midu.click` is the current URL for the Sinatra website
+
+Domain `midu.click` is an upstream domain hosted on AWS, and it is in a separate account/hostzone to
+Sinatra's one.
+
+Operator needs to:
+- create a hostzone `sinatra.midu.click.` at their AWS Route53.
+- Apply for hostzone delegation. Send the 4 name servers' address to adminstrator of `midu.click.` to create a NS record in the hostzone
+- Wait until the NS record is ready in `midu.click.`. run `dig sinatra.midu.click` should resolve to
+name servers of current hostzone.
+-

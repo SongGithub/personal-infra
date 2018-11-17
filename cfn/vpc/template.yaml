@@ -7,36 +7,46 @@ Parameters:
   EnvironmentName:
     Description: The name to associate resources with
     Type: String
-
   VpcCIDR:
     Description: Please enter the IP CIDR range
     Type: String
     Default: 192.168.0.0/16
-
   AvailabilityZones:
     Description: The AZs in the target region
     Type: CommaDelimitedList
     Default: ap-southeast-2a,ap-southeast-2b,ap-southeast-2c
-
   PublicSubnetCIDR:
     Description: The Public CIDR Ranges
     Type: CommaDelimitedList
     Default: 192.168.0.0/20,192.168.16.0/20,192.168.32.0/20,192.168.96.0/20
-
   PrivateSubnetCIDR:
     Description: The Private CIDR Ranges
     Type: CommaDelimitedList
     Default: 192.168.48.0/20,192.168.64.0/20,192.168.80.0/20
-
   VpcFlowLogRetention:
     Description: Flow Log Retention in Days
     Type: String
     Default: 3
-
-  VpcFlowLogTrafficType:
-    Description: Flow Log Traffic Type
+  KeyName:
+    Description: Application ssh login keypair name
+    Type: AWS::EC2::KeyPair::KeyName
+    Default: "sinatra"
+  DockerVersion:
+    Description: docker image tag
     Type: String
-    Default: REJECT
+    Default: "latest"
+  AllowedCidrRanges:
+    Description: AllowedCidr used to the bastion
+    Type: String
+  BastionSSHKeyName:
+    Description: SSHkey name for the bastion box.
+    Type: String
+  HostedZoneID:
+    Description: "hosted zone id for the new sub domain"
+    Type: String
+  DomainName:
+    Description: "domain name want to register"
+    Type: String
 
 
 Resources:

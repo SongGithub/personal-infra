@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+
+set -ex
+
+dcr="docker-compose run --rm"
+
+domain_name="dev.sinatra.midu.click"
+hosted_zone="Z1B0L3OAN8GYAW"
+
+request_acm() {
+    cert_arn=$($dcr awscli aws acm request-certificate \
+                --domain-name "$domain_name" \
+                --validation-method DNS \
+                --idempotency-token "123" \
+                | jq -r '.CertificateArn')
+    echo "$cert_arn"
+}
+
+check_acm_status() {
+    whole_message=$($dcr awscli aws acm describe-certificate --certificate-arn "$cert_arn")
+    acm_challenge_details=$(echo "$whole_message" | jq -r '.Certificate.DomainValidationOptions[0].ResourceRecord')
+    cname_name=$(echo $acm_challenge_details | jq -r ".Name")
+    cname_value=$(echo $acm_challenge_details | jq -r ".Value")
+    acm_cert_status=$(echo "$whole_message" | jq -r ".Certificate.Status")
+}
+
+create_challenge_cname() {
+    $dcr -e hostedzone_id="$hosted_zone" \
+        -e dns_validation_cname_key="$cname_name" \
+        -e dns_validation_cname_value="$cname_value" \
+        gomplate -f cfn/dns/template_acm.yaml > tmp.yaml
+    $dcr stackup sinatra-acm up -t tmp.yaml
+    rm tmp.yaml
+}
+
+delete_challenge_cname() {
+    $dcr stackup sinatra-acm down
+}
+
+verify_cert_issue_status() {
+    echo "--- Waiting for acm cert to be ready..."
+    next_wait_time=1
+    while [ $next_wait_time -le 10 ]
+    do
+        check_acm_status
+        if [ "$acm_cert_status" == 'ISSUED' ]
+        then
+          echo "Cert is ready, cleaning up DNS challenge cname record"
+          delete_challenge_cname
+          exit 0
+        fi
+
+        echo "Cert not ready yet [try $next_wait_time]..."
+        echo ""
+        next_wait_time=$((next_wait_time+1))
+
+        sleep 10
+    done
+    echo "time out waiting for cert to be ready!" && exit 1
+}
+
+# main
+request_acm
+check_acm_status
+create_challenge_cname "$hosted_zone" "$cname_name" "$cname_value"
+verify_cert_issue_status
+delete_challenge_cname

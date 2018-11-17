@@ -1,0 +1,40 @@
+---
+AWSTemplateFormatVersion:  "2010-09-09"
+
+Parameters:
+  HostedZoneID:
+    Description: "hosted zone id for the new sub domain"
+    Type: String
+  EnvironmentName:
+    Description: EnvironmentName aka stack identifier
+    Type: String
+  DomainName:
+    Description: "domain name want to register"
+    Type: String
+  DockerVersion:
+    Description: docker image tag
+    Type: String
+    Default: "latest"
+  AllowedCidrRanges:
+    Description: AllowedCidr used to the bastion
+    Type: String
+  BastionSSHKeyName:
+    Description: SSHkey name for the bastion box.
+    Type: String
+  KeyName:
+    Description: Application ssh login keypair name
+    Type: AWS::EC2::KeyPair::KeyName
+    Default: "sinatra"
+
+Resources:
+  # a cname record to point website url to its ELB dns
+  webServiceCName:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref HostedZoneID
+      Name: !Ref DomainName
+      Type: CNAME
+      TTL: 60
+      ResourceRecords:
+      - Fn::ImportValue:
+          Fn::Sub: ElasticLoadBalancerDNS-${EnvironmentName}

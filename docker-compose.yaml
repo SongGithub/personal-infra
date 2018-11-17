@@ -16,9 +16,24 @@ services:
     environment:
       - AWS_DEFAULT_REGION=ap-southeast-2
 
-  gomplate:
-    image: hairyhenderson/gomplate:latest
+  ktmpl:
+    image: jimmycuadra/ktmpl:0.8.0
     volumes:
       - ".:/app"
     working_dir: /app
-    entrypoint: /gomplate
+
+  gomplate:
+    image: hairyhenderson/gomplate:v3.0.0-slim
+    volumes:
+      - ".:/app"
+    working_dir: /app
+
+
+  awscli:
+    image: cgswong/aws:1.16.39
+    working_dir: /app
+    environment:
+      - AWS_DEFAULT_REGION=ap-southeast-2
+    volumes:
+      - .:/app
+      - $HOME/.aws:/root/.aws

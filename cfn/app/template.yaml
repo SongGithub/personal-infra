@@ -1,7 +1,6 @@
 ---
 AWSTemplateFormatVersion: 2010-09-09
 
-
 Parameters:
 
   EnvironmentName:
@@ -23,11 +22,18 @@ Parameters:
     Description: docker image tag
     Type: String
     Default: "latest"
-  WebServerCertARN:
+  AllowedCidrRanges:
+    Description: AllowedCidr used to the bastion
     Type: String
-    Description: the Amazon Resource Name (ARN) of an AWS Certificate Manager (ACM) certificate.
-    AllowedPattern: "arn:aws:acm:.*"
-
+  BastionSSHKeyName:
+    Description: SSHkey name for the bastion box.
+    Type: String
+  HostedZoneID:
+    Description: "hosted zone id for the new sub domain"
+    Type: String
+  DomainName:
+    Description: "domain name want to register"
+    Type: String
 
 Resources:
 
@@ -79,10 +85,6 @@ Resources:
         InstancePort: '80'
         Protocol: TCP
         InstanceProtocol: TCP
-      - LoadBalancerPort: '443'
-        InstancePort: '80'
-        Protocol: HTTPS
-        SSLCertificateId: !Ref WebServerCertARN
       HealthCheck:
         Target: !Sub HTTP:80/
         HealthyThreshold: "2"
@@ -98,8 +100,11 @@ Resources:
 
   EC2ASG:
     UpdatePolicy:
-      AutoScalingReplacingUpdate:
-        WillReplace: true
+      AutoScalingRollingUpdate:
+        MaxBatchSize: 1
+        MinInstancesInService: 1
+        PauseTime: PT5M
+        WaitOnResourceSignals: True
     Type: AWS::AutoScaling::AutoScalingGroup
     Properties:
       VPCZoneIdentifier:
@@ -119,7 +124,6 @@ Resources:
       - Key: Name
         Value: !Sub ${AWS::StackName}
         PropagateAtLaunch: true
-
     CreationPolicy:
       ResourceSignal:
         Count: !Ref DesiredInstances
@@ -138,12 +142,6 @@ Resources:
       - IpProtocol: "-1"
         CidrIp: 0.0.0.0/0
       SecurityGroupIngress:
-      - IpProtocol: tcp
-        FromPort: 22
-        ToPort: 22
-        SourceSecurityGroupId:
-          Fn::ImportValue:
-            !Sub BastionAccessSecurityGroup-${EnvironmentName}
       - IpProtocol: tcp
         FromPort: 80
         ToPort: 80
@@ -252,7 +250,6 @@ Resources:
                 files:
                 - '/etc/awslogs/awslogs.conf'
                 - '/etc/awslogs/awscli.conf'
-
     Properties:
       KeyName: !Ref KeyName
       IamInstanceProfile: !Ref InstanceProfile
@@ -260,6 +257,8 @@ Resources:
       InstanceType: t2.micro
       SecurityGroups:
       - !Ref EC2SecurityGroup
+      - Fn::ImportValue:
+          !Sub BastionAccessSecurityGroup-${EnvironmentName}
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash -xe
@@ -344,3 +343,15 @@ Resources:
               - cloudwatch:EnableAlarmActions
               - cloudwatch:PutMetricAlarm
               Resource: "*"
+
+Outputs:
+  ElasticLoadBalancer:
+    Description: LB for the app
+    Value: !Ref ElasticLoadBalancer
+    Export:
+      Name: !Sub ElasticLoadBalancer-${EnvironmentName}
+  ElasticLoadBalancerDNS:
+    Description: DNS name of the LB for the app
+    Value: !GetAtt ElasticLoadBalancer.DNSName
+    Export:
+      Name: !Sub ElasticLoadBalancerDNS-${EnvironmentName}
