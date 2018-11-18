@@ -46,8 +46,8 @@ Resources:
     Properties:
       GroupName: sinatraCiBotGroup
       ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/AWSCodeDeployFullAccess
-        - arn:aws:iam::aws:policy/AmazonS3FullAccess
+        - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPowerUser
+        - arn:aws:iam::aws:policy/ElasticLoadBalancingFullAccess
       Policies:
         - PolicyName: CiUserCFN
           PolicyDocument:
@@ -67,6 +67,16 @@ Resources:
               - cloudformation:ExecuteChangeSet
               Resource:
               - "*"
+        - PolicyName: CiUserAppStackPermissions
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+            - Effect: Allow
+              Action:
+              - ec2:DescribeKeyPairs
+              Resource:
+              - "*"
+
 
   CiUser:
     Type: AWS::IAM::User

@@ -9,5 +9,5 @@ for f in $(find cfn -type f -name "template.yaml");
         echo "validating file $f"
         docker-compose run --rm awscli \
         aws cloudformation validate-template \
-        --template-body file://"$f" # 1>/dev/null || die "this template isn't valid! Bail out..."
+        --template-body file://"$f" 1>/dev/null || die "this template isn't valid! Bail out..."
 done
