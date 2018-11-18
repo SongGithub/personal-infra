@@ -10,6 +10,11 @@ dcr="docker-compose run --rm"
 domain_name=$(grep 'DomainName' params/"$env".yaml | awk '{ print $2}')
 hosted_zone=$(grep 'HostedZoneID:' params/"$env".yaml |  awk '{ print $2}')
 
+if_cert_exists() {
+    cert_count=$($dcr awscli aws acm list-certificates | jq -r ".CertificateSummaryList[] | select(.DomainName==\"$domain_name\")"  | jq -s length)
+    [ $cert_count -gt 0 ] && exit 1
+}
+
 request_acm() {
     cert_arn=$($dcr awscli aws acm request-certificate \
                 --domain-name "$domain_name" \
@@ -63,6 +68,7 @@ verify_cert_issue_status() {
 }
 
 # main
+if_cert_exists
 request_acm
 check_acm_status
 create_challenge_cname "$hosted_zone" "$cname_name" "$cname_value"

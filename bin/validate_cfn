@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+set -e
+
+die() { printf '%s\n' "$*" >&2; exit 1; }
+
+for f in $(find cfn -type f -name "template.yaml");
+    do
+        echo "validating file $f"
+        docker-compose run --rm awscli \
+        aws cloudformation validate-template \
+        --template-body file://"$f" 1>/dev/null || die "this template isn't valid! Bail out..."
+done

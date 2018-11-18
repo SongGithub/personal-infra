@@ -1,5 +1,7 @@
 ---
 AWSTemplateFormatVersion: 2010-09-09
+Description: "This stack maintains app related resources, such as ELB, ASG, and EC2"
+
 
 Parameters:
 
@@ -155,7 +157,7 @@ Resources:
     Type: "AWS::AutoScaling::LaunchConfiguration"
     Metadata:
       AWS::CloudFormation::Init:
-        aswLogConfig:
+        awsLogConfig:
           packages:
             yum:
               awslogs: []

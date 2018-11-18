@@ -1,5 +1,7 @@
 ---
 AWSTemplateFormatVersion:  "2010-09-09"
+Description: "This stack holds bastion setup, including ASG, SG rules"
+
 
 Parameters:
 

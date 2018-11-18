@@ -1,6 +1,6 @@
 ---
 AWSTemplateFormatVersion:  "2010-09-09"
-
+Description: "This stack creates a Docker image repo to store docker images as artifact for the app"
 
 Parameters:
 

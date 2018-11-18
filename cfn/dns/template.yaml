@@ -1,5 +1,7 @@
 ---
 AWSTemplateFormatVersion:  "2010-09-09"
+Description: "This stack maintains CNAME Resource for the app, given hosted zone"
+
 
 Parameters:
   HostedZoneID:

@@ -1,6 +1,6 @@
 ---
 AWSTemplateFormatVersion:  "2010-09-09"
-
+Description: "This stack serves as foundation for the app. It contains VPC, subnet, NAT, EIP, etc"
 
 Parameters:
 

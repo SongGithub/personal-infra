@@ -7,6 +7,10 @@ docker_image_version=${1:-latest}
 
 cat params/dev.yaml | sed  "s/^\(DockerVersion:\).*/\1 "$docker_image_version"/" > params/ci.yaml
 
+# template-path: cfn
+# component-name: app
+# env-name: ci
+# stack-identifier: dev
 bin/deploy_cfn cfn app ci dev
 
 rm params/ci.yaml
