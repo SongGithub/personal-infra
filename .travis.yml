@@ -3,7 +3,6 @@ addons:
   apt:
     packages:
     - docker-ce
-
 services:
 - docker
 install: docker-compose pull --parallel
