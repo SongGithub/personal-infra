@@ -6,7 +6,7 @@ addons:
 
 services:
 - docker
-
+install: docker-compose pull --parallel
 jobs:
   include:
     - stage: test
@@ -18,9 +18,9 @@ jobs:
         - ./bin/deploy_cfn cfn app dev dev
     - stage: build_app
       script:
-        - ./bin/app_build_publish dev 123
+        - ./bin/app_build_publish dev $TRAVIS_BUILD_NUMBER
     - stage: deploy_app
-        - ./bin/update_app 123
+        - ./bin/update_app $TRAVIS_BUILD_NUMBER
     - stage: deploy_dns_cert
         - ./bin/deploy_cfn cfn dns ci dev
         - ./bin/ensure_cert dev
