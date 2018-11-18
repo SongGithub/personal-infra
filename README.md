@@ -21,7 +21,7 @@
 ### CI user setup
 
 To create a CI user in AWS account with codeDeploy permission, locally run following after authenticated to AWS:
-- `bin/deploy_cfn cfn iam dev`
+- `bin/deploy_cfn cfn iam dev dev`
 
 Then please go to AWS console, manually create AccessKey. And note the key ID and secret. This is an one-off task
 , so simplicity overcomes repeatability. Then follow [instructions](https://docs.travis-ci.com/user/encryption-keys/)
@@ -29,7 +29,7 @@ Then please go to AWS console, manually create AccessKey. And note the key ID an
 ### setup VPC
 locally run following after authenticated to AWS:
 
-- `bin/deploy_cfn cfn vpc dev`
+- `bin/deploy_cfn cfn vpc dev dev`
 
 - The above script will create a VPC containing 3 public subnets, 3 private subnets
 accoss 3 AZ, as well EIP, RouteTables, and NAT
@@ -50,7 +50,7 @@ downloade a file `sinatra.pem` to your default Download directory,
 - run `chmod 400 ~/Downloads/sinatra.pem`
 - run `ssh-add ~/Downloads/sinatra.pem`
 - configure cfn/bastion/params/dev.yaml to your CIDR range. It has been locked down to the CIDR rage
-- run `bin/deploy_cfn cfn bastion dev` to create CFN stack for bastion
+- run `bin/deploy_cfn cfn bastion dev dev` to create CFN stack for bastion
 - scale up the bastion ASG to 1
 - find public IP of the bastion instance
 - `ssh -A ec2-user@<the-bastion-ip>`
@@ -60,7 +60,7 @@ downloade a file `sinatra.pem` to your default Download directory,
 
 ### EC2/ASG/ELB
 - chosen ami: `ami-09b42976632b27e9b`. It is a standard free tier AMI that optimised for ECS
-- `bin/deploy_cfn cfn app dev`
+- `bin/deploy_cfn cfn app dev dev`
 - Above script will create ASG for the EC2 instances accross all 3 AZ for high availability purpose,
 as well as ELB that will do healh checks on instances
 
@@ -77,7 +77,7 @@ Operator needs to:
 - Apply for hostzone delegation. Send the 4 name servers' address to adminstrator of `midu.click.` to create a NS record in the hostzone
 - Wait until the NS record is ready in `midu.click.`. Run `dig sinatra.midu.click` should resolve to
 name servers of current hostzone.
-- run `bin/deploy_cfn dns dev`. This will create a CNAME record pointing to ELB DNS.
+- run `bin/deploy_cfn dns dev dev`. This will create a CNAME record pointing to ELB DNS.
 
 ### TLS cert setup
 

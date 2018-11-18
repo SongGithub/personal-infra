@@ -48,6 +48,25 @@ Resources:
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AWSCodeDeployFullAccess
         - arn:aws:iam::aws:policy/AmazonS3FullAccess
+      Policies:
+        - PolicyName: CiUserCFN
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+            - Effect: Allow
+              Action:
+              - cloudformation:CreateStack
+              - cloudformation:CreateChangeSet
+              - cloudformation:ListStacks
+              - cloudformation:UpdateStack
+              - cloudformation:DescribeStacks
+              - cloudformation:DescribeStackResource
+              - cloudformation:DescribeStackEvents
+              - cloudformation:ValidateTemplate
+              - cloudformation:DescribeChangeSet
+              - cloudformation:ExecuteChangeSet
+              Resource:
+              - "*"
 
   CiUser:
     Type: AWS::IAM::User
