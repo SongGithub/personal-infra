@@ -28,7 +28,6 @@ services:
       - ".:/app"
     working_dir: /app
 
-
   awscli:
     image: cgswong/aws:1.16.39
     working_dir: /app

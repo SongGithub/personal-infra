@@ -7,8 +7,8 @@ env=${1:-dev}
 # This script dances with ACM to complete TLS cert creation & DNS validation process
 
 dcr="docker-compose run --rm"
-domain_name=$(grep 'DomainName' cfn/params/"$env".yaml | awk '{ print $2}')
-hosted_zone=$(grep 'HostedZoneID:' cfn/params/"$env".yaml |  awk '{ print $2}')
+domain_name=$(grep 'DomainName' params/"$env".yaml | awk '{ print $2}')
+hosted_zone=$(grep 'HostedZoneID:' params/"$env".yaml |  awk '{ print $2}')
 
 request_acm() {
     cert_arn=$($dcr awscli aws acm request-certificate \

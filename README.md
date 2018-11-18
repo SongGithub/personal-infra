@@ -1,8 +1,9 @@
-# take-me-to-the-cloud
-
 [![Build Status](https://travis-ci.org/SongGithub/take-me-to-the-cloud.svg?branch=master)](https://travis-ci.org/SongGithub/take-me-to-the-cloud)
 
-Take me to the cloud before you could take me to the moon
+# take-me-to-the-cloud
+
+
+> Take me to the cloud before you could take me to the moon
 
 
 ## System design goals
@@ -66,7 +67,7 @@ as well as ELB that will do healh checks on instances
 
 ### DNS setup
 
-`dev.sinatra.midu.click` is the current URL for the Sinatra website
+[https://dev.sinatra.midu.click](https://dev.sinatra.midu.click) is the current URL for the Sinatra website
 
 Domain `midu.click` is an upstream domain hosted on AWS, and it is in a separate account/hostzone to
 Sinatra's one.
@@ -89,4 +90,7 @@ It is designed to use ACM to provision TLS certificate which to be hosted on the
 ### Workflow
 
 - Pack the app inside `app-sinatra/` into a new Docker image and publish with current Build tag to differentiate version
+`bin/app_build_publish dev 0.0.1`
+
 - Rerun CFN stacks to reflect the changes
+`bin/update_app 0.0.1`

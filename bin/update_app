@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -ex
+# This script will do a rolling update for the app stack with passed-in docker_image_version
+
+docker_image_version=${1:-latest}
+
+cat params/dev.yaml | sed  "s/^\(DockerVersion:\).*/\1 "$docker_image_version"/" > params/ci.yaml
+
+bin/deploy_cfn cfn app ci dev
+
+rm params/ci.yaml

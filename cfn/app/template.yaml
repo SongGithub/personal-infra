@@ -35,6 +35,7 @@ Parameters:
     Description: "domain name want to register"
     Type: String
 
+
 Resources:
 
   EC2LogGroup:
@@ -103,7 +104,7 @@ Resources:
       AutoScalingRollingUpdate:
         MaxBatchSize: 1
         MinInstancesInService: 1
-        PauseTime: PT5M
+        PauseTime: PT15M
         WaitOnResourceSignals: True
     Type: AWS::AutoScaling::AutoScalingGroup
     Properties:
@@ -127,7 +128,7 @@ Resources:
     CreationPolicy:
       ResourceSignal:
         Count: !Ref DesiredInstances
-        Timeout: PT5M
+        Timeout: PT15M
   # Assumption: BastionAccessSecurityGroup already created and exported
   EC2SecurityGroup:
     Type: AWS::EC2::SecurityGroup
@@ -274,8 +275,8 @@ Resources:
           aws --version
 
           /opt/aws/bin/cfn-init -v --region ${AWS::Region} --stack ${AWS::StackName} --resource EC2ServerLaunchConfiguration || error_exit 'Failed to run cfn-init'
-
-          docker run -d -p 80:9292 -w /app songgithub/sinatra:${DockerVersion}
+          eval $(aws ecr get-login --no-include-email --region ${AWS::Region})
+          docker run -d -p 80:9292 ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${EnvironmentName}:${DockerVersion}
 
           echo '### Wait until instance is registered as healthy in the ELB'
           until [ "$state" == "InService" ]; do

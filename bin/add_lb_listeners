@@ -8,8 +8,8 @@ env=${1:-dev}
 
 dcr="docker-compose run --rm"
 
-domain_name=$(grep 'DomainName' cfn/params/"$env".yaml | awk '{ print $2}')
-EnvironmentName=$(grep 'EnvironmentName:' cfn/params/"$env".yaml |  awk '{ print $2}')
+domain_name=$(grep 'DomainName' params/"$env".yaml | awk '{ print $2}')
+EnvironmentName=$(grep 'EnvironmentName:' params/"$env".yaml |  awk '{ print $2}')
 
 # get acm cert ARN ( list all acm cert and filter by URL)
 resp=$($dcr awscli aws acm list-certificates)
