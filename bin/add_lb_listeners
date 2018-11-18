@@ -2,8 +2,9 @@
 
 set -ex
 
-# reconfigure ELB after ACM cert is created
+env=${1:-dev}
 
+# This script reconfigure ELB after ACM cert is created
 
 dcr="docker-compose run --rm"
 
@@ -13,7 +14,6 @@ EnvironmentName=$(grep 'EnvironmentName:' cfn/params/dev.yaml |  awk '{ print $2
 # get acm cert ARN ( list all acm cert and filter by URL)
 resp=$($dcr awscli aws acm list-certificates)
 cert_arn=$(echo $resp | jq -r ".CertificateSummaryList[] | select(.DomainName==\"$domain_name\") | .CertificateArn")
-
 
 # locate elb
 elb=$($dcr awscli aws cloudformation describe-stacks --stack-name "$EnvironmentName"-app | jq -r '.Stacks[0].Outputs[] | select(.OutputKey=="ElasticLoadBalancer").OutputValue')

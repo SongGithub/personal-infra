@@ -38,10 +38,11 @@ Parameters:
 
 
 Resources:
-  codeDeployGroup:
+
+  sinatraCiBotGroup:
     Type: AWS::IAM::Group
     Properties:
-      GroupName: codeDeployGroup
+      GroupName: sinatraCiBotGroup
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AWSCodeDeployFullAccess
         - arn:aws:iam::aws:policy/AmazonS3FullAccess
@@ -50,5 +51,5 @@ Resources:
     Type: AWS::IAM::User
     Properties:
       Groups:
-        - codeDeployGroup
+        - sinatraCiBotGroup
       UserName: !Sub ${EnvironmentName}-travis-ci
