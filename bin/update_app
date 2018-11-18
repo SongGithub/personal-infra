@@ -5,7 +5,7 @@ set -ex
 
 docker_image_version=${1:-latest}
 
-cat params/dev.yaml | sed  "s/^\(DockerVersion:\).*/\1 "$docker_image_version"/" > params/ci.yaml
+cat params/dev.yaml | sed  "s/^\(DockerVersion:\).*/\1 "\"$docker_image_version\""/" > params/ci.yaml
 
 # template-path: cfn
 # component-name: app
