@@ -28,7 +28,7 @@ To create a CI user in AWS account with codeDeploy permission, locally run follo
 Then please go to AWS console, manually create AccessKey. And note the key ID and secret. This is an one-off task
 , so simplicity overcomes repeatability. Then follow [instructions](https://docs.travis-ci.com/user/encryption-keys/)
 
-### setup VPC
+### setup VPC (Manual deploy)
 locally run following after authenticated to AWS:
 
 - `bin/deploy_cfn cfn vpc dev dev`
@@ -57,8 +57,10 @@ downloade a file `sinatra.pem` to your default Download directory,
 - find public IP of the bastion instance
 - `ssh -A ec2-user@<the-bastion-ip>`
 
-*Note: Similarly, creation of the Bastion should not be inside CICD pipeline*
 *Note: Please ensure Bastion instance count is 0 after use, also there is a scheduled action that will scale off the Bastion ASG by 6pm everyday for security reason( to prevent cases that operators forgot to do so )*
+
+### ECR (Manual deploy)
+- `bin/deploy_cfn cfn ecr dev dev`
 
 ### EC2/ASG/ELB
 - chosen ami: `ami-09b42976632b27e9b`. It is a standard free tier AMI that optimised for ECS
@@ -89,3 +91,9 @@ It is designed to use ACM to provision TLS certificate which to be hosted on the
 
 ## Assumptions
 - When the build pipeline is running, none of the Cloudformation stacks should be in `IN_PROGRESS` status
+
+## Short-commings/TO-DOs
+- Permissions given to the CI user could be narrowed down. It has been given full-access to many types of resources.
+- EC2 instance type could be further refined to provide a more suitable and cheaper option.
+- The way docker image version get passed into EC2 instance could be simpler.
+- Param setup for Cloudformation templates forces me to repeat myself again and again, and it contains uncessary params otherwise it would complain. It could be swapped out entirely with other template engines such as Gomplate.
