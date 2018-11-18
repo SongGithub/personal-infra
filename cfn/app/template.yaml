@@ -343,6 +343,27 @@ Resources:
               - cloudwatch:EnableAlarmActions
               - cloudwatch:PutMetricAlarm
               Resource: "*"
+        - PolicyName: allow-read-only-access-to-ecr
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+            - Effect: Allow
+              Action:
+              - ecr:GetAuthorizationToken
+              - ecr:BatchCheckLayerAvailability
+              - ecr:GetDownloadUrlForLayer
+              - ecr:GetRepositoryPolicy
+              - ecr:DescribeRepositories
+              - ecr:ListImages
+              - ecr:BatchGetImage
+              Resource:
+                Fn::ImportValue:
+                      Fn::Sub: ecr-repo-${EnvironmentName}
+            - Effect: Allow
+              Action:
+              - ecr:GetAuthorizationToken
+              Resource: "*"
+
 
 Outputs:
   ElasticLoadBalancer:

@@ -227,6 +227,7 @@ Resources:
       MaxSize: 1
       Recurrence: "0 7 * * *"
 
+
 Outputs:
   BastionAccessSecurityGroup:
     Description: Bastion Instance
