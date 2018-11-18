@@ -15,6 +15,8 @@
   - cloudwatch log integrated
 - Easily reproducible. Most infrastructure are coded as templates, which allows it to be recreated as a separate stack with minimal reconfiguration (to `cfn/params/*.yaml`)
 - Idempotent. The use of Cloudformation helps with this property
+- Ease of deployment. Code for both application and infrastructre is automatically deployed through Travis machine user, once pushed to master branch.
+- Simplicity. The Sinatra app is packaged in Docker image which comes with all unnecessary dependencies installed in a minimal operating system. Plus, the docker image has been size-optimised by containing only binaries for installed dependencies. (Temporary files for installation have been disgarded during Docker image build)
 
 ## Initial setup
 
@@ -85,12 +87,5 @@ It is designed to use ACM to provision TLS certificate which to be hosted on the
 - apply ACM cert with DNS validate method. running script `bin/create_dns_with_cert dev` will ensure a required temporary CNAME record to be created for DNS validateion purpose, and deleted after it is finished.
 - add a new Load Balancer Listener to current ELB, in order to enable TLS connection. Simply run `bin/add_lb_listeners dev`. The script will locate existing ACM cert ARN and ELB, and attach it to the new ELB listener.
 
-## CICD setup
-
-### Workflow
-
-- Pack the app inside `app-sinatra/` into a new Docker image and publish with current Build tag to differentiate version
-`bin/app_build_publish dev 0.0.1`
-
-- Rerun CFN stacks to reflect the changes
-`bin/update_app 0.0.1`
+## Assumptions
+- When the build pipeline is running, none of the Cloudformation stacks should be in `IN_PROGRESS` status

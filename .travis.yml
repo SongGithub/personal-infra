@@ -25,7 +25,7 @@ jobs:
         - ./bin/update_app $TRAVIS_BUILD_NUMBER
     - stage: deploy_dns_cert
       script:
-        - ./bin/deploy_cfn cfn dns ci dev
+        - ./bin/deploy_cfn cfn dns dev dev
         - ./bin/ensure_cert dev
         - ./bin/add_lb_listeners dev
 

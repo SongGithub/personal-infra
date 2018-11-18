@@ -48,6 +48,9 @@ Resources:
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPowerUser
         - arn:aws:iam::aws:policy/ElasticLoadBalancingFullAccess
+        - arn:aws:iam::aws:policy/AWSCertificateManagerFullAccess
+        - arn:aws:iam::aws:policy/AmazonRoute53AutoNamingFullAccess
+        - arn:aws:iam::aws:policy/AutoScalingFullAccess
       Policies:
         - PolicyName: CiUserCFN
           PolicyDocument:
@@ -76,7 +79,12 @@ Resources:
               - ec2:DescribeKeyPairs
               Resource:
               - "*"
-
+            - Effect: Allow
+              Action:
+              - iam:GetRole
+              - iam:PassRole
+              Resource:
+              - !Sub arn:aws:iam::${AWS::AccountId}:role/app/ServerInstanceRole-${EnvironmentName}
 
   CiUser:
     Type: AWS::IAM::User
