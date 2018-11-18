@@ -20,7 +20,7 @@
 
 ## Initial setup
 
-### CI user setup
+### CI user (IAM) setup (Manual deploy)
 
 To create a CI user in AWS account with codeDeploy permission, locally run following after authenticated to AWS:
 - `bin/deploy_cfn cfn iam dev dev`

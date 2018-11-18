@@ -78,6 +78,8 @@ Resources:
             - Effect: Allow
               Action:
               - ec2:DescribeKeyPairs
+              - ec2:RevokeSecurityGroupEgress
+              - ec2:AuthorizeSecurityGroupEgress
               Resource:
               - "*"
             - Effect: Allow
@@ -109,6 +111,16 @@ Resources:
               - ec2:createTags
               - iam:AddRoleToInstanceProfile
               - iam:RemoveRoleFromInstanceProfile
+              Resource:
+              - "*"
+        - PolicyName: CiUserDnsStackPermissions
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+            - Effect: Allow
+              Action:
+              - route53:GetChangeRequest
+              - route53:GetChange
               Resource:
               - "*"
 

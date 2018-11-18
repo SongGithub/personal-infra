@@ -16,7 +16,6 @@ jobs:
       script:
         - ./bin/deploy_cfn cfn vpc dev dev
         - ./bin/deploy_cfn cfn bastion dev dev
-        # - ./bin/deploy_cfn cfn app dev dev
     - stage: build_app
       script:
         - ./bin/app_build_publish dev $TRAVIS_BUILD_NUMBER
@@ -35,7 +34,3 @@ env:
   - secure: P0cNIUaEmu3hpit484SI9+rKJx2TNgk4uCJ5RkXsBEL3mcsQeyP3eXtwx0vPL1RxFl1D3dfht4/UEn/EsXaqIU2mSqV9M74G/XhmLVDcyK1hKB5iZXoBzk/ZBM94NOknXK2scRWzYDww78gNeC8xyELzzf6KcZC5aKWxISx2v7sF7r9RaGb9UrZH3rWTO5RwJzpvbfKxfLEdMPHPcbXmvMz3x6VaMwrzKkaEIYadKOLsf2OgueJvPo27ISF2213iL8Yw5eJWoSSGIa2mr1Mf9OCq6AM3PFzsIoq5hJhJGByh6zwAJePJL+6x9ExETafxk5zu5QRyBFihfz4PUzgN4rKQs+nOjTcrjMbkydZ9wNEM7hbpd1NGn0LObWB7c3R/scat+8gRkY8wz8ufxCrkL5Cms88uHNk9x9irSQznVIRWztC+p4mpn9ik4+ajbLjR618IdckR5pcA6Q0n4oryQk4GVnACw2aOB8/XNeaHdiV1Ei7RMHZbREkCA9hmbI7nFQmi2juvDFnCCCa1GYqZ6f2wCMM215ut199KmuZ2wucJvI11Nf+4kQ0eI2w2n86hyjPF421SKr8FCIbkH6MxYPX9F55zAIV+lBxOW41fhsZswSjybUeYZPajvg2ew0dhbyKvJ5vG4zdJQyx7uzQycAYgBGuggNQQti/xaj+j8oI=
   # AWS_SECRET_ACCESS_KEY
   - secure: O5PvpErHYbTYIUZd1ZIIUnGDRIZi1ygRhyRqfROhC2PKDtP4Qv+60vFT2R6jQTk7RCgc2cO0cLtvQjiaelfmDMzlkvLtGtC2PRic1UeqnF1XSAp7hqLlIuquN0vwLGK5lEW6DjUy0cjMRp/O2C3vqP+2zimOQaCSuUiKrOFV8Q06RTUxsELh09F6bw2cyUN5Qg9byo+JFFhBV3ru/cFT2Mle40CgN0bT4o/8uvEMRkfn7paL3fl1/CAPUp78VL2omjVtGizJcgZrOUeNfUXlteIVjxlRJZf2ZsRFMVCT2qO1yaO0BS3a/rtHYB6GDyZ37FY9NJRQZsOdbDYukkh7yPL7yKm1qqXyAbw8A/YiMHkf8mpWdh9eLJqOhGn08xk3NzCrxg7QRlbFTMeTcBx4+rnxD4MWY3UIUrr9QuK1LgloEfK4N6HrsjHwVlPAtt9FXD8SooqqYAVTxABk2XmtMaiT7TWlFwgVeGlZ1xpko8lKtMYGGpfG9PZHNXXi10e6sKI7IzH4wgVZC7U+KiEoD+tN7dnlZEWQN3kIIa9cNpOvCNmX7Tcx5cjIi0xA+rzW7kMIH0yaLykarOUQyIr+ooKh9BT7r6zEI23Zh/IfaQD6M26Msw3OKP8n6Uqnxs9uN4EZqdIXxvghfP1hnZT0gLMcR3EZ1D9/LvGiJiJn7Os=
-
-# agent permissions required:
-# - be able to trigger rolling-update in AWS/CFN
-# - be able to push docker images to ECR repo

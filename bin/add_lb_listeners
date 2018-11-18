@@ -20,5 +20,5 @@ elb=$($dcr awscli aws cloudformation describe-stacks --stack-name "$EnvironmentN
 
 # add listener to elb
 $dcr awscli aws elb create-load-balancer-listeners \
-    --load-balancer-name sinatra-d-ElasticL-ESPW7J3ZR1CF \
+    --load-balancer-name "$elb" \
     --listeners "Protocol=HTTPS,LoadBalancerPort=443,InstanceProtocol=HTTP,InstancePort=80,SSLCertificateId=$cert_arn"

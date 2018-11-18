@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -ex
+set -e
 
 # This script will build Docker image as artifact and push to designated ECR repo
 
