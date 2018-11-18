@@ -68,6 +68,7 @@ Resources:
               - cloudformation:ValidateTemplate
               - cloudformation:DescribeChangeSet
               - cloudformation:ExecuteChangeSet
+              - cloudformation:DeleteStack
               Resource:
               - "*"
         - PolicyName: CiUserAppStackPermissions
@@ -83,8 +84,33 @@ Resources:
               Action:
               - iam:GetRole
               - iam:PassRole
+              - iam:CreateRole
               Resource:
-              - !Sub arn:aws:iam::${AWS::AccountId}:role/app/ServerInstanceRole-${EnvironmentName}
+              - "*"
+
+        - PolicyName: CiUserBastionStackPermissions
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+            - Effect: Allow
+              Action:
+              - iam:CreateRole
+              - iam:DeleteRolePolicy
+              - iam:DeleteRole
+              - iam:PutRolePolicy
+              - iam:CreateInstanceProfile
+              - logs:CreateLogGroup
+              - logs:DescribeLogGroups
+              - logs:DeleteLogGroup
+              - logs:PutRetentionPolicy
+              - ec2:CreateSecurityGroup
+              - ec2:DeleteSecurityGroup
+              - ec2:AuthorizeSecurityGroupIngress
+              - ec2:createTags
+              - iam:AddRoleToInstanceProfile
+              - iam:RemoveRoleFromInstanceProfile
+              Resource:
+              - "*"
 
   CiUser:
     Type: AWS::IAM::User
