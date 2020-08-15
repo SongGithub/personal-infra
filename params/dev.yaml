@@ -1,8 +1,8 @@
 ---
-AllowedCidrRanges: "203.34.100.0/24"
-BastionSSHKeyName: "sinatra"
+AllowedCidrRanges: "0.0.0.0/0"
+BastionSSHKeyName: song-personal-dev
 DockerVersion: latest
-DomainName: dev.sinatra.midu.click
-EnvironmentName: sinatra-dev
-HostedZoneID: Z1B0L3OAN8GYAW
-KeyName: sinatra
+DomainName: dev.midu.com.au
+EnvironmentName: dev
+HostedZoneID: Z1V33XO4AGPWSX
+KeyName: song-personal-dev
