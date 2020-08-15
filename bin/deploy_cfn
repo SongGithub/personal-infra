@@ -4,7 +4,7 @@ dcr="docker-compose run --rm"
 
 set -e
 
-if [ "$#" -ne 4 ]; then
+if [ "$#" -ne 3 ]; then
   echo "Usage: bin/deploy_cfn <cfn_path> <component_name> <env>"
   exit 1
 fi
