@@ -1,10 +1,5 @@
-[![Build Status](https://travis-ci.org/SongGithub/take-me-to-the-cloud.svg?branch=master)](https://travis-ci.org/SongGithub/take-me-to-the-cloud)
 
-# take-me-to-the-cloud
-
-
-> Take me to the cloud before you could take me to the moon
-
+# personal infra
 
 ## System design goals
 
@@ -16,7 +11,7 @@
 - Easily reproducible. Most infrastructure are coded as templates, which allows it to be recreated as a separate stack with minimal reconfiguration (to `cfn/params/*.yaml`)
 - Idempotent. The use of Cloudformation helps with this property
 - Ease of deployment. Code for both application and infrastructre is automatically deployed through Travis machine user, once pushed to master branch.
-- Simplicity. The Sinatra app is packaged in Docker image which comes with all unnecessary dependencies installed in a minimal operating system. Plus, the docker image has been size-optimised by containing only binaries for installed dependencies. (Temporary files for installation have been disgarded during Docker image build)
+- Simplicity.
 
 ## Initial setup
 
@@ -71,16 +66,6 @@ as well as ELB that will do healh checks on instances
 
 ### DNS setup
 
-[https://dev.sinatra.midu.click](https://dev.sinatra.midu.click) is the current URL for the Sinatra website
-
-Domain `midu.click` is an upstream domain hosted on AWS, and it is in a separate account/hostzone to
-Sinatra's one.
-
-Operator needs to:
-- create a hostzone `sinatra.midu.click.` at their AWS Route53.
-- Apply for hostzone delegation. Send the 4 name servers' address to adminstrator of `midu.click.` to create a NS record in the hostzone
-- Wait until the NS record is ready in `midu.click.`. Run `dig sinatra.midu.click` should resolve to
-name servers of current hostzone.
 - run `bin/deploy_cfn dns dev dev`. This will create a CNAME record pointing to ELB DNS.
 
 ### TLS cert setup
