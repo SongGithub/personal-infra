@@ -82,3 +82,7 @@ It is designed to use ACM to provision TLS certificate which to be hosted on the
 - EC2 instance type could be further refined to provide a more suitable and cheaper option.
 - The way docker image version get passed into EC2 instance could be simpler.
 - Param setup for Cloudformation templates forces me to repeat myself again and again, and it contains uncessary params otherwise it would complain. It could be swapped out entirely with other template engines such as Gomplate.
+
+## Cloudflare infrastructure
+
+See [cloudflare/midu-zone/](cloudflare/midu-zone/README.md) for the resource ownership, import procedure and manual plan/apply workflow. Credentials and state stay outside Git; CI never applies infrastructure.

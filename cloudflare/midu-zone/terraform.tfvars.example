@@ -1,0 +1,3 @@
+# Copy to terraform.tfvars (ignored) and replace the placeholders.
+account_id = "00000000000000000000000000000000"
+zone_id = "11111111111111111111111111111111"
