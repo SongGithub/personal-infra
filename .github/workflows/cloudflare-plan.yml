@@ -1,0 +1,56 @@
+name: Verify live Cloudflare adoption
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cloudflare-adoption
+  cancel-in-progress: false
+
+jobs:
+  plan:
+    # Run reviewed default-branch code only; never expose tokens to PR code.
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: cloudflare/midu-zone
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3
+        with:
+          terraform_version: 1.16.6
+          terraform_wrapper: false
+      - name: Verify imports against live Cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_TFVARS_JSON: ${{ secrets.CLOUDFLARE_TFVARS_JSON }}
+          TF_IN_AUTOMATION: 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_TFVARS_JSON" ]; then
+            echo 'Set CLOUDFLARE_API_TOKEN and CLOUDFLARE_TFVARS_JSON in this repository Actions secrets.'
+            exit 1
+          fi
+          task_dir=$(mktemp -d)
+          trap 'rm -rf "$task_dir"' EXIT
+          printf '%s' "$CLOUDFLARE_TFVARS_JSON" > "$task_dir/inputs.tfvars.json"
+          # Plans/logs may contain private values: keep them temporary and unprinted.
+          unset TF_LOG TF_LOG_PATH
+          if ! terraform init -backend=false -input=false -lockfile=readonly -no-color > "$task_dir/init.log" 2>&1; then
+            echo 'Terraform init failed. Check the pinned provider and lockfile.'
+            exit 1
+          fi
+          if ! terraform plan -input=false -no-color -var-file="$task_dir/inputs.tfvars.json" -out="$task_dir/adopt.tfplan" > "$task_dir/plan.log" 2>&1; then
+            echo 'Live plan failed. Check this repository token scope, inputs, legacy app scope and provider compatibility. Private logs were not published.'
+            exit 1
+          fi
+          terraform show -json "$task_dir/adopt.tfplan" 2> "$task_dir/show.log" | python3 check_adoption.py

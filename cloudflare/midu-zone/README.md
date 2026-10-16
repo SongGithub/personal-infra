@@ -20,7 +20,7 @@ Use Terraform 1.16.6 (CI version; minimum 1.7) and the committed provider lockfi
 
 For discovery/adoption, use read-only token permissions. Editing later needs the corresponding Edit/Write permissions, scoped to the owning zone/account. Do not give project stacks permission to change the shared zone.
 
-State is local by default and may contain private values even when Terraform marks them sensitive. `.gitignore` is not encryption: keep state, backups and saved plans on protected storage and back them up privately. Use one operator at a time. Before multiple people or CI apply changes, configure a private encrypted remote backend with locking. No Cloudflare token or state is stored in GitHub Actions; CI only validates mock plans.
+State is local by default and may contain private values even when Terraform marks them sensitive. `.gitignore` is not encryption: keep state, backups and saved plans on protected storage and back them up privately. Use one operator at a time. Before multiple people or CI apply changes, configure a private encrypted remote backend with locking. Pull-request CI validates mock plans without credentials. A separate manually run live-check workflow reads a read-only token from GitHub Actions secrets; it does not persist or apply Terraform state.
 
 ## Adopt existing resources first
 
@@ -65,3 +65,18 @@ Token permissions: Zone Read for adoption, Zone Edit for reviewed zone changes. 
 ## Existing AWS pipeline
 
 This repository also contains a legacy Travis pipeline that deploys AWS infrastructure. Cloudflare-only review commits and the eventual merge commit must include `[skip travis]` so that pipeline is not triggered. This marker is specific to Travis; the new GitHub Actions validation still runs. The AWS pipeline itself is unchanged. See [Travis build skipping](https://docs.travis-ci.com/user/customizing-the-build/#skip-a-build).
+
+## GitHub Actions secrets: personal-infra
+
+For this stack, save credentials in **SongGithub/personal-infra → Settings → Secrets and variables → Actions → Repository secrets**. Do not place its token in another project's repository.
+
+- `CLOUDFLARE_API_TOKEN`: a read-only token with Zone Read for `midu.com.au`, scoped to the existing account/zone. Cloudflare DNS token scope is zone-wide, not individual-record-wide.
+- `CLOUDFLARE_TFVARS_JSON`: a JSON object containing this stack's actual Terraform input values, with the same keys as `terraform.tfvars.example`. Include resource IDs, not the API token. For example, an HCL `zone_id = "..."` becomes JSON `"zone_id": "..."`; nested objects keep their keys. Do not use another stack's input file or the placeholder IDs.
+
+After the workflow is merged into `master`, open **Actions → Verify live Cloudflare adoption → Run workflow**, selecting `master`. The job refuses other branches. The normal PR checks continue using dummy inputs and mocked provider responses; they receive no Cloudflare token.
+
+This is a fresh read-only import-plan check. It runs `init -backend=false`, plans imports against live resources, and requires the entire stack to be unchanged apart from imports. It never applies or saves authoritative state. Because each run begins without persisted state, it is not a replacement for normal drift detection after resources have been added or removed from the stack. Plans, raw logs and inputs can contain private values; the job keeps them temporary, prints only the adoption guard result/generic failures, and uploads no artifacts.
+
+A real apply pipeline is not enabled yet. Before adding it, configure durable encrypted state with locking and separate state keys/workspaces for each owner. Keep write tokens in a protected GitHub Environment with default-branch deployment restrictions and a required reviewer where supported by the repository plan. Apply only a reviewed saved plan; do not reuse this read-only token for deployment.
+
+References: [GitHub Actions secrets](https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/use-secrets), [manual workflow runs](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/manually-run-a-workflow), [sensitive Terraform plan files](https://developer.hashicorp.com/terraform/cli/commands/plan#out-filename).

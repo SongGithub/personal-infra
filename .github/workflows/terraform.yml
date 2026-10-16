@@ -2,10 +2,10 @@ name: Validate Cloudflare IaC
 
 on:
   pull_request:
-    paths: ['cloudflare/midu-zone/**', '.github/workflows/terraform.yml']
+    paths: ['cloudflare/midu-zone/**', '.github/workflows/terraform.yml', '.github/workflows/cloudflare-plan.yml']
   push:
     branches: [master]
-    paths: ['cloudflare/midu-zone/**', '.github/workflows/terraform.yml']
+    paths: ['cloudflare/midu-zone/**', '.github/workflows/terraform.yml', '.github/workflows/cloudflare-plan.yml']
   workflow_dispatch:
 
 permissions:
