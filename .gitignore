@@ -1,1 +1,16 @@
 Gemfile.lock
+
+# Local Terraform credentials, state, plans and generated files.
+**/.terraform/
+**/__pycache__/
+*.tfstate
+*.tfstate.*
+*.tfplan
+*.tfvars
+*.tfvars.json
+!*.tfvars.example
+*.auto.tf.json
+crash.log
+crash.*.log
+.env
+.env.*

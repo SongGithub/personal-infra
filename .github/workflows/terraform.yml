@@ -1,0 +1,29 @@
+name: Validate Cloudflare IaC
+
+on:
+  pull_request:
+    paths: ['cloudflare/midu-zone/**', '.github/workflows/terraform.yml', '.github/workflows/cloudflare-plan.yml']
+  push:
+    branches: [master]
+    paths: ['cloudflare/midu-zone/**', '.github/workflows/terraform.yml', '.github/workflows/cloudflare-plan.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: cloudflare/midu-zone
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3
+        with:
+          terraform_version: 1.16.6
+      - run: terraform fmt -check -recursive
+      - run: terraform init -backend=false -input=false -lockfile=readonly
+      - run: terraform validate
+      - run: terraform test -var-file=terraform.tfvars.example
+      - run: python3 -m unittest discover -s tests -p 'test_*.py'
